@@ -2,7 +2,7 @@
 function Connect-vSphere {
     $cred = Get-Credential
     $serv = "vmware.jysk.com"
-    connect-viserver -server $serv -credential $cred
+        connect-viserver -server $serv -credential $cred
 }
 function Select-Vms {
     $RemoveTag = Read-Host -Prompt "Enter the Tag to be removed"
@@ -16,28 +16,27 @@ function Select-Vms {
         $Confirmation = Read-Host "Do you want to remove $RemoveTag from this list of VMs? [y/n]"
     }
     $AddTag = Read-Host -Prompt "Enter the Tag to be applied"
-    return $vms, $RemoveTag, $AddTag
+    $Script:vms = $vms
+    $Script:RemoveTag = $RemoveTag
+    $Script:AddTag = $AddTag
 }
 
-<#
 function Update-Tag {
-    param (
-    )
     try {
         #Remove old tag and add the new one
-        $OldTag = Get-Tag -Name $Rem
-        $NewTag = Get-Tag -Name $Add
-        $vms | Remove-TagAssignment -Tag $OldTag
-        $vms | New-TagAssignment -Tag $NewTag
+        $OldTag = Get-Tag -Name "$RemoveTag"
+        $NewTag = Get-Tag -Name "$AddTag"
+        $vms | Remove-TagAssignment -Tag $OldTag -Confirm
+        $vms | New-TagAssignment -Tag $NewTag -Confirm
     } Catch {
         Write-Output "An error occurred: $($_.Exception.Message)"
     }
 }
-#>  
 
 Connect-vSphere
 Select-Vms
-#Update-Tag -Rem $RemoveTag -Add $AddTag -Confirm
+Update-Tag
+
 
 #dev notes:
 #need to limit scope of changes further, by tag and other grouping
