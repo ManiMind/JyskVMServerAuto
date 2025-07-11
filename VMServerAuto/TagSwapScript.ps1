@@ -23,11 +23,8 @@ function Select-Vms {
 
 function Update-Tag {
     try {
-        #Remove old tag and add the new one
-        $OldTag = Get-Tag -Name "$RemoveTag"
-        $NewTag = Get-Tag -Name "$AddTag"
-        $vms | Remove-TagAssignment -Tag $OldTag -Confirm
-        $vms | New-TagAssignment -Tag $NewTag -Confirm
+        $vms | Get-TagAssignment -Tag $RemoveTag | Remove-TagAssignment -Confirm
+        $vms | New-TagAssignment -Tag $AddTag -Confirm
     } Catch {
         Write-Output "An error occurred: $($_.Exception.Message)"
     }
@@ -36,7 +33,5 @@ function Update-Tag {
 Connect-vSphere
 Select-Vms
 Update-Tag
+Disconnect-VIServer
 
-
-#dev notes:
-#need to limit scope of changes further, by tag and other grouping
